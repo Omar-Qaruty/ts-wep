@@ -134,8 +134,13 @@ function () {
 
   UserForm.prototype.eventsMap = function () {
     return {
-      "click:button": this.onButtonClick
+      "click:button": this.onButtonClick,
+      "mouseenter:h1": this.onHeadHover
     };
+  };
+
+  UserForm.prototype.onHeadHover = function () {
+    console.log("mouse hovered over H1");
   };
 
   UserForm.prototype.onButtonClick = function () {

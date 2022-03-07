@@ -2,7 +2,14 @@ export class UserForm {
   constructor(public parent: Element) {}
 
   eventsMap(): { [key: string]: () => void } {
-    return { "click:button": this.onButtonClick };
+    return {
+      "click:button": this.onButtonClick,
+      "mouseenter:h1": this.onHeadHover,
+    };
+  }
+
+  onHeadHover(): void {
+    console.log("mouse hovered over H1");
   }
 
   onButtonClick(): void {
