@@ -2416,7 +2416,66 @@ function () {
 }();
 
 exports.Eventing = Eventing;
-},{}],"src/models/User.ts":[function(require,module,exports) {
+},{}],"src/models/Collection.ts":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Collection = void 0;
+
+var Eventing_1 = require("./Eventing");
+
+var axios_1 = __importDefault(require("axios"));
+
+var Collection =
+/** @class */
+function () {
+  function Collection(rootUrl, deserialize) {
+    this.rootUrl = rootUrl;
+    this.deserialize = deserialize;
+    this.models = [];
+    this.events = new Eventing_1.Eventing();
+  }
+
+  Object.defineProperty(Collection.prototype, "onEvent", {
+    get: function get() {
+      return this.events.onEvent;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Collection.prototype, "triggerEvent", {
+    get: function get() {
+      return this.events.triggerEvent;
+    },
+    enumerable: false,
+    configurable: true
+  });
+
+  Collection.prototype.fetch = function () {
+    var _this = this;
+
+    axios_1.default.get(this.rootUrl).then(function (respones) {
+      respones.data.forEach(function (value) {
+        _this.models.push(_this.deserialize(value));
+      });
+
+      _this.triggerEvent("change");
+    });
+  };
+
+  return Collection;
+}();
+
+exports.Collection = Collection;
+},{"./Eventing":"src/models/Eventing.ts","axios":"node_modules/axios/index.js"}],"src/models/User.ts":[function(require,module,exports) {
 "use strict";
 
 var __extends = this && this.__extends || function () {
@@ -2460,6 +2519,8 @@ var ApiSync_1 = require("./ApiSync");
 
 var Eventing_1 = require("./Eventing");
 
+var Collection_1 = require("./Collection");
+
 var rootUrl = "http://localhost:3000/users";
 
 var User =
@@ -2475,87 +2536,31 @@ function (_super) {
     return new User(new Attributes_1.Attrubutes(attrs), new Eventing_1.Eventing(), new ApiSync_1.AbiSync(rootUrl));
   };
 
+  User.buildUserCollection = function () {
+    return new Collection_1.Collection(rootUrl, function (json) {
+      return User.buildUser(json);
+    });
+  };
+
   return User;
 }(Model_1.Model);
 
 exports.User = User;
-},{"./Attributes":"src/models/Attributes.ts","./Model":"src/models/Model.ts","./ApiSync":"src/models/ApiSync.ts","./Eventing":"src/models/Eventing.ts"}],"src/models/Collection.ts":[function(require,module,exports) {
-"use strict";
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Collection = void 0;
-
-var User_1 = require("./User");
-
-var Eventing_1 = require("./Eventing");
-
-var axios_1 = __importDefault(require("axios"));
-
-var Collection =
-/** @class */
-function () {
-  function Collection(rootUrl) {
-    this.rootUrl = rootUrl;
-    this.models = [];
-    this.events = new Eventing_1.Eventing();
-  }
-
-  Object.defineProperty(Collection.prototype, "onEvent", {
-    get: function get() {
-      return this.events.onEvent;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  Object.defineProperty(Collection.prototype, "triggerEvent", {
-    get: function get() {
-      return this.events.triggerEvent;
-    },
-    enumerable: false,
-    configurable: true
-  });
-
-  Collection.prototype.fetch = function () {
-    var _this = this;
-
-    axios_1.default.get(this.rootUrl).then(function (respones) {
-      respones.data.forEach(function (value) {
-        var user = User_1.User.buildUser(value);
-
-        _this.models.push(user);
-      });
-
-      _this.triggerEvent("change");
-    });
-  };
-
-  return Collection;
-}();
-
-exports.Collection = Collection;
-},{"./User":"src/models/User.ts","./Eventing":"src/models/Eventing.ts","axios":"node_modules/axios/index.js"}],"src/index.ts":[function(require,module,exports) {
+},{"./Attributes":"src/models/Attributes.ts","./Model":"src/models/Model.ts","./ApiSync":"src/models/ApiSync.ts","./Eventing":"src/models/Eventing.ts","./Collection":"src/models/Collection.ts"}],"src/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var Collection_1 = require("./models/Collection");
+var User_1 = require("./models/User");
 
-var collection = new Collection_1.Collection("http://localhost:3000/users");
+var collection = User_1.User.buildUserCollection();
 collection.onEvent("change", function () {
   console.log(collection);
 });
 collection.fetch();
-},{"./models/Collection":"src/models/Collection.ts"}],"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./models/User":"src/models/User.ts"}],"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

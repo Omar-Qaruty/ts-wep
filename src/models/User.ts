@@ -2,6 +2,7 @@ import { Attrubutes } from "./Attributes";
 import { Model } from "./Model";
 import { AbiSync } from "./ApiSync";
 import { Eventing } from "./Eventing";
+import { Collection } from "./Collection";
 
 export interface UserProps {
   //    the "?" means that the props are optional , you don't need to pass all the props in the new object.
@@ -17,6 +18,11 @@ export class User extends Model<UserProps> {
       new Attrubutes<UserProps>(attrs),
       new Eventing(),
       new AbiSync<UserProps>(rootUrl)
+    );
+  }
+  static buildUserCollection(): Collection<User, UserProps> {
+    return new Collection<User, UserProps>(rootUrl, (json: UserProps) =>
+      User.buildUser(json)
     );
   }
 }
