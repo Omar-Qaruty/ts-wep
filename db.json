@@ -9,6 +9,11 @@
       "name": "Knight",
       "age": 26,
       "id": 2
+    },
+    {
+      "name": "ward new name",
+      "age": 25,
+      "id": 3
     }
   ]
 }
