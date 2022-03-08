@@ -1,13 +1,15 @@
 import { User } from "./models/User";
-import { UserForm } from "./views/UserForm";
+import { UserEdit } from "./views/UserEdit";
 
 const user = User.buildUser({ name: "ward new name", age: 25 });
 
 const root = document.getElementById("root");
 if (root) {
-  const userForm = new UserForm(root, user);
+  const userEdit = new UserEdit(root, user);
 
-  userForm.render();
+  userEdit.render();
+
+  console.log(userEdit);
 } else {
-  throw new Error("Roor element not found");
+  throw new Error("Root element not found");
 }

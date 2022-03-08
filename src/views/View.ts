@@ -10,6 +10,8 @@ import { UserProps } from "../models/User";
 // check UserFrom class.
 
 export abstract class View<T extends Model<K>, K> {
+  regions: { [key: string]: Element } = {};
+
   constructor(public parent: Element, public model: T) {
     this.bindModel();
   }
@@ -20,8 +22,15 @@ export abstract class View<T extends Model<K>, K> {
     });
   }
 
-  abstract eventsMap(): { [key: string]: () => void };
   abstract template(): string;
+
+  regionsMap(): { [key: string]: string } {
+    return {};
+  }
+
+  eventsMap(): { [key: string]: () => void } {
+    return {};
+  }
 
   bindEvents(fragment: DocumentFragment): void {
     const eventsMap = this.eventsMap();
@@ -35,6 +44,17 @@ export abstract class View<T extends Model<K>, K> {
     }
   }
 
+  mapRegions(fragment: DocumentFragment): void {
+    const regionsMap = this.regionsMap();
+    for (let key in regionsMap) {
+      const selector = regionsMap[key];
+      const element = fragment.querySelector(selector);
+      if (element) {
+        this.regions[key] = element;
+      }
+    }
+  }
+
   render(): void {
     //   clearing the parent element so it replaces the old element with a new one.
     this.parent.innerHTML = "";
@@ -42,6 +62,7 @@ export abstract class View<T extends Model<K>, K> {
     templateElement.innerHTML = this.template();
 
     this.bindEvents(templateElement.content);
+    this.mapRegions(templateElement.content);
 
     this.parent.append(templateElement.content);
   }
